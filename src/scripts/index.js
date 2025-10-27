@@ -1,17 +1,37 @@
-// CSS imports
-import '../styles/styles.css';
+import "../styles/styles.css";
+import App from "./pages/app";
+import ThemeHandler from "./utils/theme-handler";
 
-import App from './pages/app';
+document.addEventListener("DOMContentLoaded", async () => {
+  // Initialize theme handler
+  const themeHandler = new ThemeHandler();
 
-document.addEventListener('DOMContentLoaded', async () => {
+  // Setup theme toggle button
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      themeHandler.toggleTheme();
+    });
+  }
+
+  // Initialize app
   const app = new App({
-    content: document.querySelector('#main-content'),
-    drawerButton: document.querySelector('#drawer-button'),
-    navigationDrawer: document.querySelector('#navigation-drawer'),
+    content: document.querySelector("#main-content"),
+    drawerButton: document.querySelector("#drawer-button"),
+    navigationDrawer: document.querySelector("#navigation-drawer"),
   });
+
   await app.renderPage();
 
-  window.addEventListener('hashchange', async () => {
-    await app.renderPage();
+  // Handle hash change with View Transition API
+  window.addEventListener("hashchange", async () => {
+    // Check if View Transition API is supported
+    if (document.startViewTransition) {
+      document.startViewTransition(async () => {
+        await app.renderPage();
+      });
+    } else {
+      await app.renderPage();
+    }
   });
 });
